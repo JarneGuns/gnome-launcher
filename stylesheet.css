@@ -1,0 +1,221 @@
+/* Rofi drun look. Colors per theme at the bottom. */
+
+.launcher-window {
+    font-family: monospace;
+    font-size: 11pt;
+    border-width: 1px;
+    border-radius: 0;
+    padding: 5px;
+}
+
+.launcher-header {
+    padding: 1px 1px 4px 1px;
+}
+
+.launcher-prompt {
+    padding-right: 0.5em;
+}
+
+.launcher-entry,
+.launcher-entry:hover,
+.launcher-entry:focus {
+    font-family: monospace;
+    font-size: 11pt;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none !important;
+    padding: 0;
+    min-height: 0;
+}
+
+.launcher-counter {
+    padding-left: 0.5em;
+}
+
+.launcher-separator {
+    height: 2px;
+    margin-bottom: 4px;
+}
+
+.launcher-row {
+    padding: 2px 4px;
+    spacing: 0.5em;
+}
+
+.launcher-icon {
+    padding-right: 0.25em;
+}
+
+.launcher-generic {
+    font-style: italic;
+    font-size: 9pt;
+}
+
+/* light: rofi default (solarized light) */
+
+.launcher-window.light {
+    background-color: #fdf6e3;
+    border-color: #002b36;
+    color: #002b36;
+}
+.launcher-window.light .launcher-entry,
+.launcher-window.light .launcher-entry:focus {
+    color: #002b36;
+    caret-color: #002b36;
+    selection-background-color: #586875;
+    selected-color: #eee8d5;
+}
+.launcher-window.light .launcher-entry StLabel.hint-text,
+.launcher-window.light .launcher-counter {
+    color: #586875;
+}
+.launcher-window.light .launcher-separator { color: #002b36; }
+.launcher-window.light .launcher-row.normal { background-color: #fdf6e3; }
+.launcher-window.light .launcher-row.alternate { background-color: #eee8d5; }
+.launcher-window.light .launcher-row:hover { background-color: #e4ddc8; }
+.launcher-window.light .launcher-row.selected {
+    background-color: #586875;
+    color: #eee8d5;
+}
+
+/* dark (default): solarized dark */
+
+.launcher-window.dark {
+    background-color: #002b36;
+    border-color: #586e75;
+    color: #93a1a1;
+}
+.launcher-window.dark .launcher-entry,
+.launcher-window.dark .launcher-entry:focus {
+    color: #eee8d5;
+    caret-color: #eee8d5;
+    selection-background-color: #268bd2;
+    selected-color: #fdf6e3;
+}
+.launcher-window.dark .launcher-entry StLabel.hint-text,
+.launcher-window.dark .launcher-counter {
+    color: #586e75;
+}
+.launcher-window.dark .launcher-separator { color: #93a1a1; }
+.launcher-window.dark .launcher-row.normal { background-color: #002b36; }
+.launcher-window.dark .launcher-row.alternate { background-color: #073642; }
+.launcher-window.dark .launcher-row:hover { background-color: #0d4250; }
+.launcher-window.dark .launcher-row.selected {
+    background-color: #268bd2;
+    color: #fdf6e3;
+}
+
+/* Season themes, colors taken from ~/Pictures/backgrounds/<season>.jpeg */
+
+/* spring: fresh grass and cherry blossom */
+
+.launcher-window.spring {
+    background-color: #f3f8ea;
+    border-color: #68872f;
+    color: #2c3f1d;
+}
+.launcher-window.spring .launcher-prompt { color: #b04a72; font-weight: bold; }
+.launcher-window.spring .launcher-entry,
+.launcher-window.spring .launcher-entry:focus {
+    color: #2c3f1d;
+    caret-color: #b04a72;
+    selection-background-color: #b84f78;
+    selected-color: #ffffff;
+}
+.launcher-window.spring .launcher-entry StLabel.hint-text,
+.launcher-window.spring .launcher-counter {
+    color: #5f7546;
+}
+.launcher-window.spring .launcher-separator { color: #68872f; }
+.launcher-window.spring .launcher-row.normal { background-color: #f3f8ea; }
+.launcher-window.spring .launcher-row.alternate { background-color: #e4efd6; }
+.launcher-window.spring .launcher-row:hover { background-color: #d6e6c4; }
+.launcher-window.spring .launcher-row.selected {
+    background-color: #b84f78;
+    color: #ffffff;
+}
+
+/* summer: golden fields and sun */
+
+.launcher-window.summer {
+    background-color: #fbf0d4;
+    border-color: #cf913a;
+    color: #47290a;
+}
+.launcher-window.summer .launcher-prompt { color: #8f5818; font-weight: bold; }
+.launcher-window.summer .launcher-entry,
+.launcher-window.summer .launcher-entry:focus {
+    color: #47290a;
+    caret-color: #8f5818;
+    selection-background-color: #955c1a;
+    selected-color: #fff8e6;
+}
+.launcher-window.summer .launcher-entry StLabel.hint-text,
+.launcher-window.summer .launcher-counter {
+    color: #7d5a26;
+}
+.launcher-window.summer .launcher-separator { color: #cf913a; }
+.launcher-window.summer .launcher-row.normal { background-color: #fbf0d4; }
+.launcher-window.summer .launcher-row.alternate { background-color: #f4e1b2; }
+.launcher-window.summer .launcher-row:hover { background-color: #efd497; }
+.launcher-window.summer .launcher-row.selected {
+    background-color: #955c1a;
+    color: #fff8e6;
+}
+
+/* autumn: dark earth, rust and falling leaves */
+
+.launcher-window.autumn {
+    background-color: #291309;
+    border-color: #70472a;
+    color: #ecd9bf;
+}
+.launcher-window.autumn .launcher-prompt { color: #e0904f; font-weight: bold; }
+.launcher-window.autumn .launcher-entry,
+.launcher-window.autumn .launcher-entry:focus {
+    color: #ecd9bf;
+    caret-color: #e0904f;
+    selection-background-color: #a8541f;
+    selected-color: #fff4e3;
+}
+.launcher-window.autumn .launcher-entry StLabel.hint-text,
+.launcher-window.autumn .launcher-counter {
+    color: #b0906c;
+}
+.launcher-window.autumn .launcher-separator { color: #96663d; }
+.launcher-window.autumn .launcher-row.normal { background-color: #291309; }
+.launcher-window.autumn .launcher-row.alternate { background-color: #371c0e; }
+.launcher-window.autumn .launcher-row:hover { background-color: #4a2814; }
+.launcher-window.autumn .launcher-row.selected {
+    background-color: #a8541f;
+    color: #fff4e3;
+}
+
+/* winter: snow and cold blue-grey sky */
+
+.launcher-window.winter {
+    background-color: #eef3f9;
+    border-color: #859bb1;
+    color: #1f2d3d;
+}
+.launcher-window.winter .launcher-prompt { color: #3d5a80; font-weight: bold; }
+.launcher-window.winter .launcher-entry,
+.launcher-window.winter .launcher-entry:focus {
+    color: #1f2d3d;
+    caret-color: #3d5a80;
+    selection-background-color: #4f6a87;
+    selected-color: #f5f9fd;
+}
+.launcher-window.winter .launcher-entry StLabel.hint-text,
+.launcher-window.winter .launcher-counter {
+    color: #56697e;
+}
+.launcher-window.winter .launcher-separator { color: #859bb1; }
+.launcher-window.winter .launcher-row.normal { background-color: #eef3f9; }
+.launcher-window.winter .launcher-row.alternate { background-color: #dfe7f1; }
+.launcher-window.winter .launcher-row:hover { background-color: #d0dbe8; }
+.launcher-window.winter .launcher-row.selected {
+    background-color: #4f6a87;
+    color: #f5f9fd;
+}

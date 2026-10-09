@@ -1,0 +1,3 @@
+# Build output (make schemas / make pack)
+schemas/gschemas.compiled
+*.shell-extension.zip

@@ -1,0 +1,8 @@
+{
+  "uuid": "launcher@jarne",
+  "name": "Launcher",
+  "description": "A rofi-like (drun) application launcher. Press Alt+Space, type, pick with the arrow keys and launch with Enter.",
+  "shell-version": ["50"],
+  "settings-schema": "org.gnome.shell.extensions.launcher",
+  "url": ""
+}

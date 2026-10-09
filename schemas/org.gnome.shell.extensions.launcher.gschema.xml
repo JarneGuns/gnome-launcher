@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.launcher" path="/org/gnome/shell/extensions/launcher/">
+    <key name="toggle-launcher" type="as">
+      <default>['&lt;Alt&gt;space']</default>
+      <summary>Keyboard shortcut to open or close the launcher</summary>
+    </key>
+    <key name="theme" type="s">
+      <choices>
+        <choice value="dark"/>
+        <choice value="light"/>
+        <choice value="spring"/>
+        <choice value="summer"/>
+        <choice value="autumn"/>
+        <choice value="winter"/>
+        <choice value="season"/>
+      </choices>
+      <default>'dark'</default>
+      <summary>Color scheme</summary>
+    </key>
+    <key name="max-rows" type="i">
+      <range min="3" max="50"/>
+      <default>15</default>
+      <summary>Maximum number of visible rows</summary>
+    </key>
+    <key name="fuzzy" type="b">
+      <default>true</default>
+      <summary>Allow fuzzy matching (subsequences and small typos)</summary>
+    </key>
+    <key name="width" type="i">
+      <range min="10" max="100"/>
+      <default>25</default>
+      <summary>Window width in percent of the screen width</summary>
+    </key>
+    <key name="show-icons" type="b">
+      <default>true</default>
+      <summary>Show icons next to apps and windows</summary>
+    </key>
+    <key name="terminal" type="s">
+      <default>''</default>
+      <summary>Terminal for run mode (empty: detect automatically)</summary>
+    </key>
+  </schema>
+</schemalist>
