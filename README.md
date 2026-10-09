@@ -77,3 +77,7 @@ make nested   # nested shell (needs the devkit package)
 ```
 
 `make nested` needs the devkit package: `mutter-devkit` on Fedora, `mutter-dev-bin` on Ubuntu.
+
+## License
+
+GPL-2.0-or-later. See [LICENSE](LICENSE).
