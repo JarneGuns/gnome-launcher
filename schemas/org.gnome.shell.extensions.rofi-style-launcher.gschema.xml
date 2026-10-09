@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="org.gnome.shell.extensions.launcher" path="/org/gnome/shell/extensions/launcher/">
+  <schema id="org.gnome.shell.extensions.rofi-style-launcher" path="/org/gnome/shell/extensions/rofi-style-launcher/">
     <key name="toggle-launcher" type="as">
       <default>['&lt;Alt&gt;space']</default>
       <summary>Keyboard shortcut to open or close the launcher</summary>

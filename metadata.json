@@ -1,8 +1,9 @@
 {
-  "uuid": "launcher@jarne",
-  "name": "Launcher",
-  "description": "A rofi-like (drun) application launcher. Press Alt+Space, type, pick with the arrow keys and launch with Enter.",
+  "uuid": "rofi-style-launcher@jarneguns.github.io",
+  "name": "Rofi-style Launcher",
+  "description": "A rofi-style (drun) launcher. Press Alt+Space, type, pick with the arrow keys and launch with Enter. Tab switches between apps, open windows, commands and files. Typing a calculation such as 12*7 shows the result; pressing Enter on it copies the result to the clipboard.",
+  "version-name": "1.0",
   "shell-version": ["50"],
-  "settings-schema": "org.gnome.shell.extensions.launcher",
+  "settings-schema": "org.gnome.shell.extensions.rofi-style-launcher",
   "url": "https://github.com/JarneGuns/gnome-launcher"
 }

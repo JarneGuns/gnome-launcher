@@ -9,6 +9,15 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 
+// File access in shell code must be asynchronous: synchronous IO would block
+// the whole desktop while it waits for the disk.
+Gio._promisify(Gio.File.prototype, 'enumerate_children_async');
+Gio._promisify(Gio.File.prototype, 'load_contents_async');
+Gio._promisify(Gio.File.prototype, 'query_info_async');
+Gio._promisify(Gio.FileEnumerator.prototype, 'next_files_async');
+Gio._promisify(Gio.FileEnumerator.prototype, 'close_async');
+Gio._promisify(Gio.Subprocess.prototype, 'communicate_utf8_async');
+
 // Tried in order when the terminal setting is empty.
 const TERMINALS = ['ghostty', 'x-terminal-emulator', 'ptyxis', 'gnome-terminal',
     'kgx', 'konsole', 'alacritty', 'kitty', 'foot', 'xterm'];
@@ -28,7 +37,7 @@ function terminalArgv(setting, command) {
 const drunMode = {
     name: 'drun',
 
-    load() {
+    async load() {
         const mostUsed = Shell.AppUsage.get_default().get_most_used();
         const usage = new Map(mostUsed.map((app, i) => [app.get_id(), mostUsed.length - i]));
 
@@ -63,7 +72,7 @@ const drunMode = {
 const windowMode = {
     name: 'window',
 
-    load() {
+    async load() {
         const tracker = Shell.WindowTracker.get_default();
         // Same filtering as the Alt+Tab switcher, in most-recently-used order.
         const windows = global.display.get_tab_list(Meta.TabList.NORMAL_ALL, null)
@@ -89,29 +98,45 @@ const windowMode = {
     },
 };
 
+// Names of the executables in `dir`, or [] when it is missing or unreadable.
+async function listExecutables(dir) {
+    const names = [];
+    try {
+        const children = await Gio.File.new_for_path(dir).enumerate_children_async(
+            'standard::name,standard::type,access::can-execute',
+            Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, null);
+        let infos;
+        while ((infos = await children.next_files_async(100, GLib.PRIORITY_DEFAULT, null)).length > 0) {
+            for (const info of infos) {
+                if (info.get_file_type() !== Gio.FileType.DIRECTORY &&
+                    info.get_attribute_boolean('access::can-execute'))
+                    names.push(info.get_name());
+            }
+        }
+        await children.close_async(GLib.PRIORITY_DEFAULT, null);
+    } catch {
+        // Missing or unreadable PATH entry.
+    }
+    return names;
+}
+
+async function fileExists(uri) {
+    try {
+        await Gio.File.new_for_uri(uri).query_info_async('standard::type',
+            Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, null);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 const runMode = {
     name: 'run',
 
-    load() {
-        const names = new Set();
-        for (const dir of (GLib.getenv('PATH') ?? '').split(':')) {
-            if (!dir)
-                continue;
-            try {
-                const children = Gio.File.new_for_path(dir).enumerate_children(
-                    'standard::name,standard::type,access::can-execute',
-                    Gio.FileQueryInfoFlags.NONE, null);
-                let info;
-                while ((info = children.next_file(null))) {
-                    if (info.get_file_type() !== Gio.FileType.DIRECTORY &&
-                        info.get_attribute_boolean('access::can-execute'))
-                        names.add(info.get_name());
-                }
-                children.close(null);
-            } catch {
-                // Missing or unreadable PATH entry.
-            }
-        }
+    async load() {
+        const dirs = (GLib.getenv('PATH') ?? '').split(':').filter(Boolean);
+        const lists = await Promise.all(dirs.map(listExecutables));
+        const names = new Set(lists.flat());
         return [...names].map(name => ({id: name, name, usage: 0}));
     },
 
@@ -129,8 +154,6 @@ const runMode = {
             Util.spawn(terminalArgv(terminal, command));
     },
 };
-
-Gio._promisify(Gio.Subprocess.prototype, 'communicate_utf8_async');
 
 const RECENT_FILES = GLib.build_filenamev([GLib.get_user_data_dir(), 'recently-used.xbel']);
 const MAX_RECENT = 500;
@@ -174,21 +197,22 @@ const filesMode = {
     name: 'files',
 
     // Recently used files, newest first.
-    load() {
+    async load() {
         let xml;
         try {
-            const [, bytes] = Gio.File.new_for_path(RECENT_FILES).load_contents(null);
+            const [bytes] = await Gio.File.new_for_path(RECENT_FILES).load_contents_async(null);
             xml = new TextDecoder().decode(bytes);
         } catch {
             return [];
         }
 
-        const recent = [...xml.matchAll(/<bookmark href="([^"]+)"[^>]*?modified="([^"]+)"/g)]
+        const candidates = [...xml.matchAll(/<bookmark href="([^"]+)"[^>]*?modified="([^"]+)"/g)]
             .map(([, href, modified]) => ({uri: unescapeXml(href), modified}))
             .filter(r => r.uri.startsWith('file://') && !isNoise(r.uri))
             .sort((a, b) => b.modified.localeCompare(a.modified))
-            .slice(0, MAX_RECENT)
-            .filter(r => Gio.File.new_for_uri(r.uri).query_exists(null));
+            .slice(0, MAX_RECENT);
+        const exists = await Promise.all(candidates.map(r => fileExists(r.uri)));
+        const recent = candidates.filter((_, i) => exists[i]);
 
         return recent.map((r, i) => fileItem(r.uri, recent.length - i));
     },
@@ -196,15 +220,20 @@ const filesMode = {
     // Searches the GNOME file index (LocalSearch). Resolves to more items.
     async search(query, cancellable) {
         const terms = query.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
-        if (!terms.some(t => t.length >= MIN_INDEX_TERM) ||
-            !GLib.find_program_in_path('tinysparql'))
+        if (!terms.some(t => t.length >= MIN_INDEX_TERM))
             return [];
 
-        const proc = Gio.Subprocess.new([
-            'tinysparql', 'query', '-b', 'org.freedesktop.LocalSearch3',
-            '-a', `q:s:${terms.map(t => `${t}*`).join(' ')}`,
-            '-q', INDEX_QUERY,
-        ], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE);
+        let proc;
+        try {
+            proc = Gio.Subprocess.new([
+                'tinysparql', 'query', '-b', 'org.freedesktop.LocalSearch3',
+                '-a', `q:s:${terms.map(t => `${t}*`).join(' ')}`,
+                '-q', INDEX_QUERY,
+            ], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE);
+        } catch {
+            // tinysparql is not installed: only recent files are available.
+            return [];
+        }
         const cancelId = cancellable.connect(() => proc.force_exit());
 
         try {

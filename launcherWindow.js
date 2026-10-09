@@ -22,7 +22,7 @@ const SEARCH_DELAY_MS = 250;
 // St cannot draw dashed borders, so the rofi separator is drawn with cairo.
 // The line color comes from the CSS `color` property.
 const DashedLine = GObject.registerClass({
-    GTypeName: 'LauncherJarneDashedLine',
+    GTypeName: 'RofiStyleLauncherDashedLine',
 }, class DashedLine extends St.DrawingArea {
     vfunc_repaint() {
         const cr = this.get_context();
@@ -156,7 +156,7 @@ export class LauncherWindow {
         probe.destroy();
         this._scroll.height = this._rowHeight * this._maxRows;
 
-        this._update();
+        this._showMode();
     }
 
     close() {
@@ -199,21 +199,33 @@ export class LauncherWindow {
     }
 
     // Items are loaded once per open, the first time a mode is shown.
-    _itemsFor(mode) {
-        if (!this._items.has(mode))
-            this._items.set(mode, mode.load());
-        return this._items.get(mode);
+    // Loading is asynchronous; the list is redrawn when the items arrive.
+    _showMode() {
+        const mode = this._mode;
+        const items = this._items;
+        if (!items.has(mode)) {
+            items.set(mode, null);
+            mode.load().then(loaded => {
+                // Ignore results for a launcher that was closed meanwhile.
+                if (this._items !== items)
+                    return;
+                items.set(mode, loaded);
+                if (this._mode === mode)
+                    this._update();
+            }).catch(e => logError(e, `launcher: loading ${mode.name} failed`));
+        }
+        this._update();
     }
 
     _switchMode(delta) {
         this._modeIndex = (this._modeIndex + delta + MODES.length) % MODES.length;
-        this._update();
+        this._showMode();
     }
 
     _update() {
         const mode = this._mode;
         const query = this._entry.text;
-        const items = this._itemsFor(mode);
+        const items = this._items.get(mode) ?? [];
 
         this._prompt.text = `${mode.name}:`;
         this._render(rankApps(items, query, {fuzzy: this._fuzzy}), items.length, 0);

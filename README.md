@@ -1,4 +1,4 @@
-# Launcher
+# Rofi-style Launcher
 
 A `rofi -show drun` style app launcher, built as a GNOME Shell extension (GNOME 50, Wayland).
 Press Alt+Space, type a name, pick with the arrow keys and launch with Enter.
@@ -10,7 +10,7 @@ Press Alt+Space, type a name, pick with the arrow keys and launch with Enter.
 ```sh
 make install                     # compiles the schemas and symlinks into ~/.local/share/gnome-shell/extensions/
 # log out and back in (Wayland)
-gnome-extensions enable launcher@jarne
+gnome-extensions enable rofi-style-launcher@jarneguns.github.io
 ```
 
 GNOME uses Alt+Space for the window menu by default. Disable that shortcut so the launcher can use it:
@@ -24,7 +24,7 @@ To restore it: `gsettings reset org.gnome.desktop.wm.keybindings activate-window
 Alt+Space still does nothing? Check for a custom shortcut on Alt+Space under Settings → Keyboard → Keyboard Shortcuts → Custom Shortcuts. Such a shortcut keeps the key taken. Remove it, then restart the extension:
 
 ```sh
-gnome-extensions disable launcher@jarne && gnome-extensions enable launcher@jarne
+gnome-extensions disable rofi-style-launcher@jarneguns.github.io && gnome-extensions enable rofi-style-launcher@jarneguns.github.io
 ```
 
 ## Keys
@@ -51,7 +51,7 @@ gnome-extensions disable launcher@jarne && gnome-extensions enable launcher@jarn
 
 ## Settings
 
-Open them with `gnome-extensions prefs launcher@jarne`. You can set the shortcut, the theme (dark, light, spring, summer, autumn, winter, or "season", which follows the calendar), the width, the maximum number of rows, icons, the terminal for run mode and fuzzy matching.
+Open them with `gnome-extensions prefs rofi-style-launcher@jarneguns.github.io`. You can set the shortcut, the theme (dark, light, spring, summer, autumn, winter, or "season", which follows the calendar), the width, the maximum number of rows, icons, the terminal for run mode and fuzzy matching.
 
 ## Ranking
 

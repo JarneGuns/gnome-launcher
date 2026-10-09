@@ -1,4 +1,4 @@
-UUID := launcher@jarne
+UUID := rofi-style-launcher@jarneguns.github.io
 INSTALL_DIR := $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 
 .PHONY: install schemas pack test logs nested
