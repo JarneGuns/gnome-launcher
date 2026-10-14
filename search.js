@@ -4,6 +4,7 @@
 // An app is a plain object:
 //   {id, name, genericName, keywords: [], executable, usage}
 // where `usage` is a number (higher = used more often).
+// Pinned apps (a list of ids) beat usage, in the order they are listed.
 
 // Match levels, best first. Lower is better.
 const EXACT = 1;
@@ -102,21 +103,35 @@ function matchLevel(query, app) {
     return 0;
 }
 
-function compareTieBreak(a, b) {
-    return (b.app.usage ?? 0) - (a.app.usage ?? 0) ||
+// Position in the pinned list, or Infinity when not pinned.
+function pinRank(pinned, app) {
+    const index = pinned.indexOf(app.id);
+    return index < 0 ? Infinity : index;
+}
+
+function comparePinned(pinned, a, b) {
+    const ra = pinRank(pinned, a.app);
+    const rb = pinRank(pinned, b.app);
+    return ra === rb ? 0 : ra < rb ? -1 : 1;
+}
+
+function compareTieBreak(pinned, a, b) {
+    return comparePinned(pinned, a, b) ||
+        (b.app.usage ?? 0) - (a.app.usage ?? 0) ||
         a.app.name.length - b.app.name.length ||
         a.app.name.localeCompare(b.app.name);
 }
 
 // Ranks `apps` for `query`. Returns the matching apps, best first.
-// With an empty query all apps are returned, sorted by usage.
-export function rankApps(apps, query, {fuzzy = true} = {}) {
+// With an empty query all apps are returned, pinned first, then by usage.
+export function rankApps(apps, query, {fuzzy = true, pinned = []} = {}) {
     query = query.trim().toLowerCase();
 
     if (query === '') {
         return apps
             .map(app => ({app}))
             .sort((a, b) =>
+                comparePinned(pinned, a, b) ||
                 (b.app.usage ?? 0) - (a.app.usage ?? 0) ||
                 a.app.name.localeCompare(b.app.name))
             .map(r => r.app);
@@ -141,7 +156,7 @@ export function rankApps(apps, query, {fuzzy = true} = {}) {
     results.sort((a, b) =>
         a.level - b.level ||
         a.cost - b.cost ||
-        compareTieBreak(a, b));
+        compareTieBreak(pinned, a, b));
 
     return results.map(r => r.app);
 }

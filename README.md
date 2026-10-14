@@ -51,7 +51,7 @@ gnome-extensions disable rofi-style-launcher@jarneguns.github.io && gnome-extens
 
 ## Settings
 
-Open them with `gnome-extensions prefs rofi-style-launcher@jarneguns.github.io`. You can set the shortcut, the theme (dark, light, spring, summer, autumn, winter, or "season", which follows the calendar), the width, the maximum number of rows, icons, the terminal for run mode and fuzzy matching.
+Open them with `gnome-extensions prefs rofi-style-launcher@jarneguns.github.io`. You can set the shortcut, the theme (dark, light, spring, summer, autumn, winter, or "season", which follows the calendar), the width, the maximum number of rows, icons, the terminal for run mode, fuzzy matching and pinned apps.
 
 ## Ranking
 
@@ -64,7 +64,14 @@ The ranking lives in `search.js`, from best to weakest match:
 5. A match on keywords, generic name or executable.
 6. Fuzzy: subsequence or small typos. Only used when levels 1–5 find nothing.
 
-On equal scores, higher usage wins first, then the shorter name.
+On equal scores, pinned apps win first (in the order you list them), then higher usage, then the shorter name. With an empty query, pinned apps are shown at the top.
+
+Pin apps by their desktop ID, for example the Firefox snap:
+
+```
+gsettings --schemadir ~/.local/share/gnome-shell/extensions/rofi-style-launcher@jarneguns.github.io/schemas \
+  set org.gnome.shell.extensions.rofi-style-launcher pinned-apps "['firefox_firefox.desktop']"
+```
 
 ## Development
 

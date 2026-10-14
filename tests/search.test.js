@@ -107,6 +107,28 @@ test('empty query returns all apps sorted by usage', () => {
     assertEqual(result[1], 'Terminal');
 });
 
+test('empty query puts pinned apps first, in pinned order', () => {
+    const result = names('', {pinned: ['files.desktop', 'firefox.desktop']});
+    assertEqual(result.length, apps.length);
+    assertEqual(result[0], 'Files');
+    assertEqual(result[1], 'Firefox');
+    assertEqual(result[2], 'Discord');
+});
+
+test('pinned beats usage on equal level ("fi")', () => {
+    // Files has more usage, but Firefox is pinned.
+    assertEqual(names('fi', {pinned: ['firefox.desktop']})[0], 'Firefox');
+});
+
+test('pinned does not beat a better match level', () => {
+    // "term" is a prefix match for Terminal; a pinned Firefox does not match.
+    assertEqual(names('term', {pinned: ['firefox.desktop']})[0], 'Terminal');
+});
+
+test('unknown pinned ids are ignored', () => {
+    assertEqual(names('', {pinned: ['missing.desktop']})[0], 'Discord');
+});
+
 test('no match returns empty list', () => {
     assertEqual(names('zzzzqqq').length, 0);
 });

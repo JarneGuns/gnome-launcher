@@ -40,5 +40,9 @@
       <default>''</default>
       <summary>Terminal for run mode (empty: detect automatically)</summary>
     </key>
+    <key name="pinned-apps" type="as">
+      <default>[]</default>
+      <summary>Desktop IDs of apps shown above all others, in this order</summary>
+    </key>
   </schema>
 </schemalist>

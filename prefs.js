@@ -67,5 +67,16 @@ export default class LauncherPreferences extends ExtensionPreferences {
         });
         settings.bind('fuzzy', fuzzy, 'active', Gio.SettingsBindFlags.DEFAULT);
         group.add(fuzzy);
+
+        // Desktop IDs, e.g. firefox_firefox.desktop for the Firefox snap.
+        const pinned = new Adw.EntryRow({
+            title: 'Pinned apps (desktop IDs, comma separated)',
+            show_apply_button: true,
+            text: settings.get_strv('pinned-apps').join(', '),
+        });
+        pinned.connect('apply', () =>
+            settings.set_strv('pinned-apps',
+                pinned.text.split(',').map(id => id.trim()).filter(id => id !== '')));
+        group.add(pinned);
     }
 }

@@ -71,6 +71,7 @@ export class LauncherWindow {
         this._selected = -1;
         this._maxRows = this._settings.get_int('max-rows');
         this._fuzzy = this._settings.get_boolean('fuzzy');
+        this._pinned = this._settings.get_strv('pinned-apps');
         this._showIcons = this._settings.get_boolean('show-icons');
         const theme = resolveTheme(this._settings.get_string('theme'));
         const widthPercent = this._settings.get_int('width');
@@ -228,7 +229,7 @@ export class LauncherWindow {
         const items = this._items.get(mode) ?? [];
 
         this._prompt.text = `${mode.name}:`;
-        this._render(rankApps(items, query, {fuzzy: this._fuzzy}), items.length, 0);
+        this._render(rankApps(items, query, {fuzzy: this._fuzzy, pinned: this._pinned}), items.length, 0);
         this._scheduleSearch(mode, query, items);
     }
 
@@ -250,7 +251,7 @@ export class LauncherWindow {
 
                 const known = new Set(items.map(item => item.id));
                 const all = [...items, ...found.filter(item => !known.has(item.id))];
-                const results = rankApps(all, query, {fuzzy: this._fuzzy});
+                const results = rankApps(all, query, {fuzzy: this._fuzzy, pinned: this._pinned});
                 // Keep the same item selected, even if new results land above it.
                 const selectedId = this._results[this._selected]?.id;
                 const selected = Math.max(0, results.findIndex(item => item.id === selectedId));
